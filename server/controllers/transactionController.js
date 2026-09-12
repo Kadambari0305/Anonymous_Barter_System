@@ -93,6 +93,13 @@ exports.updateStatus = async (req, res) => {
     if (!transaction) return res.status(404).json({ message: 'Transaction not found' });
 
     if (status === 'Ready') {
+      if (transaction.giverId.toString() !== req.user.id) {
+        return res.status(403).json({ message: 'Only the giver can drop off the item in the locker.' });
+      }
+      if (transaction.status !== 'Pending') {
+        return res.status(400).json({ message: `Cannot drop off item: transaction is currently ${transaction.status}` });
+      }
+
       // Giver drops it
       transaction.status = 'Ready';
       transaction.dropTime = new Date();
@@ -107,6 +114,16 @@ exports.updateStatus = async (req, res) => {
     } 
 
     if (status === 'Completed') {
+      if (transaction.receiverId.toString() !== req.user.id) {
+        return res.status(403).json({ message: 'Only the receiver can pick up the item from the locker.' });
+      }
+      // Strict rule: Taker can ONLY pick up AFTER giver's drop-off window (status === 'Ready')
+      if (transaction.status !== 'Ready') {
+        return res.status(400).json({ 
+          message: 'The giver has not placed the item in the locker yet. You can only pick up after the giver completes the drop-off window.' 
+        });
+      }
+
       if (transaction.OTP !== otp) return res.status(400).json({ message: 'Invalid OTP' });
       transaction.status = 'Completed';
       transaction.pickupTime = new Date();

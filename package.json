@@ -1,0 +1,16 @@
+{
+  "name": "anonymous-barter-system",
+  "version": "1.0.0",
+  "description": "ShadowBarter - Privacy-first anonymous barter platform",
+  "main": "server/server.js",
+  "scripts": {
+    "install:all": "npm install --prefix server && npm install --prefix client",
+    "build": "npm run build --prefix client",
+    "start": "node server/server.js",
+    "dev:server": "npm start --prefix server",
+    "dev:client": "npm run dev --prefix client"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

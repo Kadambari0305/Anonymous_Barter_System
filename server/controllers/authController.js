@@ -19,7 +19,7 @@ exports.register = async (req, res) => {
     const newUser = new User({ anonymousId, password: hashedPassword, coins: 50 });
     await newUser.save();
 
-    const token = jwt.sign({ id: newUser._id, anonymousId }, process.env.JWT_SECRET, { expiresIn: '1d' });
+    const token = jwt.sign({ id: newUser._id, anonymousId }, process.env.JWT_SECRET || 'shadowbarter_secret_key_default', { expiresIn: '1d' });
     res.status(201).json({
       token,
       user: {
@@ -46,7 +46,7 @@ exports.login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
-    const token = jwt.sign({ id: user._id, anonymousId: user.anonymousId }, process.env.JWT_SECRET, { expiresIn: '1d' });
+    const token = jwt.sign({ id: user._id, anonymousId: user.anonymousId }, process.env.JWT_SECRET || 'shadowbarter_secret_key_default', { expiresIn: '1d' });
     res.status(200).json({
       token,
       user: {

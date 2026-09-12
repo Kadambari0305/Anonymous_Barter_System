@@ -26,7 +26,8 @@ export default function TransactionSimulation() {
     fetchChat();
     fetchDispute();
 
-    socketRef.current = io('http://localhost:5000');
+    const socketUrl = import.meta.env.VITE_SOCKET_URL || (import.meta.env.DEV ? 'http://localhost:5000' : window.location.origin);
+    socketRef.current = io(socketUrl);
     socketRef.current.emit('joinRoom', id);
     socketRef.current.on('receiveMessage', (message) => {
       setChat(prev => [...prev, message]);
